@@ -46,6 +46,20 @@ async function main() {
     }),
   })
 
+  // old looping structure
+  // counterWorkflow
+  //   .step(incrementStep)
+  //   .then(checkTargetStep)
+  //   .after(checkTargetStep)
+  //   .step(incrementStep, {
+  //     when: {
+  //       ref: { step: checkTargetStep, path: 'reachedTarget' },
+  //       query: { $eq: false },
+  //     },
+  //   })
+  //   .then(checkTargetStep)
+  //   .commit()
+
   // Define the workflow steps with cyclical dependency
   counterWorkflow
     .step(incrementStep)
