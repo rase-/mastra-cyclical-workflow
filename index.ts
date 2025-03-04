@@ -1,4 +1,4 @@
-import { Workflow, Step } from '@mastra/core'
+import { Workflow, Step, WhenConditionReturnValue } from '@mastra/core'
 import { z } from 'zod'
 
 async function main() {
@@ -63,17 +63,24 @@ async function main() {
   // Define the workflow steps with cyclical dependency
   counterWorkflow
     .step(incrementStep)
-    // .until(async ({ context }) => {
-    //   const res = context.getStepResult<{ newValue: number }>('increment')
-    //   return res?.newValue ? res.newValue >= 10 : false
-    // }, incrementStep)
-    .until(
-      {
-        ref: { step: incrementStep, path: 'newValue' },
-        query: { $gte: 10 },
-      },
-      incrementStep
-    )
+    .until(async ({ context }) => {
+      const res = context.getStepResult<{ newValue: number }>('increment')
+      return (res?.newValue ?? 0) >= 10
+    }, incrementStep)
+    // .until(
+    //   {
+    //     ref: { step: incrementStep, path: 'newValue' },
+    //     query: { $gte: 10 },
+    //   },
+    //   incrementStep
+    // )
+    // .while(
+    //   {
+    //     ref: { step: incrementStep, path: 'newValue' },
+    //     query: { $lt: 10 },
+    //   },
+    //   incrementStep
+    // )
     .then(finalStep)
     .commit()
 
